@@ -36,12 +36,16 @@ $logger.fatal("Tasks all ran, but we're still here...")
 System.failure("did_not_switch", color: "ff0000")
 
 rescue => e
-  System.sad_phone("765300", "Uncaught Exception", e.inspect)
+  # System.sad_phone("765300", "Uncaught Exception", e.inspect)
   3.times do
     $logger.fatal("********************")
   end
   $logger.fatal("Handling exception")
   $logger.fatal(e.inspect)
+
+  $logger.fatal("stopping so you can read the error")
+  loop { sleep(10) }
+
   $logger.fatal("`init` will exit and the kernel will crash.")
   $logger.fatal("********************")
   # Leave some time for the $logger.fatals to flush before the kernel crashes.

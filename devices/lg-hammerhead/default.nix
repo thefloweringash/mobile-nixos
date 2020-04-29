@@ -28,29 +28,7 @@ in
 {
   mobile.boot.stage-1.kernel = {
     modular = true;
-    modules = (import ./all-modules.nix) ++ [
-      "libcomposite"
-      "phy_generic"
-      "u_ether"
-      "usb_f_rndis"
-
-      # Display
-      "msm"
-
-      # Power Button
-      "pm8941_pwrkey"
-
-      # Interconnect
-      "qnoc_msm8974"
-
-      # Touchscreen
-      "i2c-qup"
-      "rmi_i2c"
-
-      # USB
-      "ci_hdrc_pci"
-      "phy-qcom-usb-hs"
-    ];
+    modules = (import ./all-modules.nix);
   };
 
   mobile.device.name = "lg-hammerhead";
