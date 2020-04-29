@@ -7,12 +7,12 @@ let
   device_config = config.mobile.device;
 
   inherit (device_config.info) kernel;
-  modulesClosure = pkgs.makeModulesClosure {
+  modulesClosure = lib.traceValFn (x: "modulesClosure=${x}") (pkgs.makeModulesClosure {
     inherit kernel;
     allowMissing = true;
     rootModules = cfg.modules ++ cfg.additional_modules;
     firmware = cfg.firmwares;
-  };
+  });
 in
 {
   options.mobile.boot.stage-1.kernel = {

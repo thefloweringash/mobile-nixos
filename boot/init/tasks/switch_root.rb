@@ -160,6 +160,9 @@ class Tasks::SwitchRoot < SingletonTask
     log("***")
     log("")
 
+    log("switch_root stopping")
+    loop { sleep(10) }
+
     [
       "/proc",
       "/sys",

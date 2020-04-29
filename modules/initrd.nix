@@ -82,7 +82,7 @@ let
       /init.mrb
   '';
 
-  bootConfigFile = writeText "${device_name}-boot-config" (toJSON config.mobile.boot.stage-1.bootConfig);
+  bootConfigFile = lib.traceValFn (x: "bootConfigFile=${x}") (writeText "${device_name}-boot-config" (toJSON config.mobile.boot.stage-1.bootConfig));
 
   contents =
     (optionals (stage-1 ? contents) (flatten stage-1.contents))

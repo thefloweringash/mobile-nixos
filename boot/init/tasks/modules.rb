@@ -9,9 +9,10 @@ class Tasks::Modules < Task
   def run()
     @modules.each do |mod|
       begin
+        $logger.info("Loading module #{mod}")
         System.run("modprobe", mod)
-      rescue System::CommandError
-        $logger.warn("Kernel module #{mod} failed to load.")
+      rescue System::CommandError => e
+        $logger.warn("Kernel module #{mod} failed to load. #{e.inspect}")
       end
     end
   end

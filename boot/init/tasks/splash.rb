@@ -8,6 +8,8 @@ class Tasks::Splash < Task
   end
 
   def run()
+    return
+
     begin
       System.run($PROGRAM_NAME, "/applets/boot-splash.mrb", image)
     # Don't fail the boot if the splash fails

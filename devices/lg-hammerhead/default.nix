@@ -1,13 +1,24 @@
 { config, lib, pkgs, ... }:
 
 let
-  kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+  kernel = pkgs.callPackage ./kernel {
+    kernelPatches = with pkgs; [
+      kernelPatches.bridge_stp_helper
+      kernelPatches.request_key_helper
+      kernelPatches.export_kernel_fpu_functions."5.3"
+    ];
+    extraConfig = ''
+      HWSPINLOCK y
+      INTERCONNECT m
+      INTERCONNECT_QCOM y
+    '';
+  };
 
   # The kernel should be generic and apply to any msm8974 device. To
   # use it with a particular device we need to add the particular dtb
   # to the kernel.
   kernelWithDTB = dtbName: pkgs.runCommand "kernel-with-dtb" {
-    passthru.file = "zImage-dtb";
+    passthru = kernel.passthru // { file = "zImage-dtb"; };
   } ''
     mkdir $out
     ln -s --target-directory=$out ${kernel}/*
@@ -16,9 +27,30 @@ let
 in
 {
   mobile.boot.stage-1.kernel = {
-    modular = true; # TODO: why is this not passthru
-    modules = [ "pm8941_pwrkey" "qnoc_msm8974" "rmi_i2c" ];
-    # TODO: firmwares = []; ???
+    modular = true;
+    modules = (import ./all-modules.nix) ++ [
+      "libcomposite"
+      "phy_generic"
+      "u_ether"
+      "usb_f_rndis"
+
+      # Display
+      "msm"
+
+      # Power Button
+      "pm8941_pwrkey"
+
+      # Interconnect
+      "qnoc_msm8974"
+
+      # Touchscreen
+      "i2c-qup"
+      "rmi_i2c"
+
+      # USB
+      "ci_hdrc_pci"
+      "phy-qcom-usb-hs"
+    ];
   };
 
   mobile.device.name = "lg-hammerhead";
@@ -46,11 +78,13 @@ in
     flash_method = "fastboot";
 
     kernel_cmdline = lib.concatStringsSep " " [
-      "console=tty0"
-      "console=ttyMSM0,115200,n8"
+      # "console=tty0"
+      # "console=ttyMSM0,115200,n8"
 
       # Using `quiet` fixes early framebuffer init, for stage-1
-      "quiet"
+      # "quiet"
+
+      "cma=256M"
     ];
 
     generate_bootimg = "true";
@@ -71,6 +105,10 @@ in
     #   # FIXME: This is the right function name, but doesn't work.
     #   # adb = "ffs.usb0";
     # };
+
+    gadgetfs.functions = {
+      rndis = "rndis.rndis";
+    };
   };
 
   mobile.hardware = {
@@ -83,9 +121,9 @@ in
 
   mobile.system.type = "android";
 
-  # mobile.usb.mode = "gadgetfs";
-  # # Google
-  # mobile.usb.idVendor = "18D1";
-  # # "Nexus 4"
-  # mobile.usb.idProduct = "D001";
+  mobile.usb.mode = "gadgetfs";
+  # Google
+  mobile.usb.idVendor = "18D1";
+  # "Nexus 4 (bootloader)" as reported by fastboot
+  mobile.usb.idProduct = "4ee0";
 }

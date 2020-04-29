@@ -32,6 +32,8 @@ else
   LVGL::Hacks.monitor_height = 1280
 end
 
+loop { sleep(10) }
+
 # Get exclusive control of the framebuffer
 VTConsole.map_console(0)
 

@@ -1,51 +1,18 @@
-{
-  mobile-nixos
-, fetchFromGitLab
-, kernelPatches ? [] # FIXME
-, buildPackages
-, dtbTool
-}:
+{ stdenv, fetchFromGitLab, buildPackages, fetchurl, perl, buildLinux, ... } @ args:
 
-let
-  inherit (buildPackages) dtc;
-in
+with stdenv.lib;
 
-(mobile-nixos.kernel-builder {
-  configfile = ./config.armv7l;
-
-  file = "zImage";
-  hasDTB = true;
-
+buildLinux (args // rec {
   version = "5.6.0-rc6";
+  modDirVersion = version;
+
+  # branchVersion needs to be x.y
+  extraMeta.branch = versions.majorMinor version;
+
   src = fetchFromGitLab {
     owner = "postmarketOS";
     repo = "linux-postmarketos";
-    rev = "5e47680b0bbc71dbc093123790951cc81eb2b84e";
-    sha256 = "1yw87s99zqdknsx9w7ndvanbhxdxp5ckwdy496638g049syr8dzm";
+    rev = "b9f39bdf61e5c8f5db63afe7ab1c9ff77aa6b4bc";
+    sha256 = "105v5gzqc4avdwzm6y2mz52c08dnv8m4fj7n4l0vdqrz7y1rdabs";
   };
-
-  # patches = [ ];
-
-  isModular = true;
-}).overrideAttrs({ postInstall ? "", postPatch ? "", nativeBuildInputs, ... }: {
-  installTargets = [ "zinstall" "modules_install" ];
-  nativeBuildInputs = nativeBuildInputs ++ [ dtc ];
-  postInstall = postInstall + ''
-    mkdir -p "$out/boot"
-
-    # FIXME factor this out properly
-    # Copies all potential output files.
-    for f in zImage-dtb Image.gz-dtb zImage Image.gz Image; do
-      f=arch/arm/boot/$f
-      [ -e "$f" ] || continue
-      echo "zImage found: $f"
-      cp -v "$f" "$out/"
-      break
-    done
-
-    mkdir -p $out/dtb
-    for f in arch/*/boot/dts/*.dtb; do
-      cp -v "$f" $out/dtb/
-    done
-  '';
-})
+} // (args.argsOverride or {}))

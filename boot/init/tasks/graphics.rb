@@ -17,6 +17,8 @@ class Tasks::Graphics < SingletonTask
   end
 
   def run()
+    return
+
     mode = File.read("/sys/class/graphics/fb0/modes")
     log("Setting framebuffer mode to: #{mode}")
     System.write("/sys/class/graphics/fb0/mode", mode)
