@@ -60,7 +60,6 @@ in
     {
       mobile = mkIf cfg.qualcomm-msm8974.enable {
         system.system = "armv7l-linux";
-        quirks.qualcomm.msm-fb-refresher.enable = true;
       };
     }
     {
