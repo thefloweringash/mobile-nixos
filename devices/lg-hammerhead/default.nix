@@ -43,6 +43,7 @@ in
     date = "";
     # TODO : make kernel part of options.
     kernel = kernelWithDTB dtb;
+    firmware = pkgs.callPackage ./firmware-adreno {};
     dtb = "qcom-msm8974-lge-nexus5-hammerhead";
     modules_initfs = "pm8941_pwrkey qnoc_msm8974 rmi_i2c";
     arch = "armv7l";
