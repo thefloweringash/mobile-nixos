@@ -6,6 +6,16 @@ let
       kernelPatches.bridge_stp_helper
       kernelPatches.request_key_helper
       kernelPatches.export_kernel_fpu_functions."5.3"
+      # fixes msm fd900000.mdss: pp done time out, lm=0
+      # may break other panels
+      # https://patchwork.kernel.org/patch/11239055/
+      {
+        name = "msm-autocommit";
+        patch = (pkgs.fetchpatch {
+          url = "https://patchwork.kernel.org/patch/11239055/raw/";
+          sha256 = "1jhd97ll8hl2rkw2wybg4k60443b0s1glgpbsz5c161hkcq1pkhj";
+        });
+      }
     ];
     extraConfig = ''
       HWSPINLOCK y
