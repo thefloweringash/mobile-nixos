@@ -1,5 +1,9 @@
 { stdenv, lib, fetchurl }:
 
+# Equivalent to pmaports "firmware-adreno"
+#
+# https://gitlab.com/postmarketOS/pmaports/-/blob/f45890b631d576f908bea50c84df51d65d3d6188/firmware/firmware-adreno/APKBUILD
+
 stdenv.mkDerivation rec {
   name = "firmware-adreno";
 
