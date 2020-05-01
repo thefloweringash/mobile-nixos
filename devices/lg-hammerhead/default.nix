@@ -28,7 +28,7 @@ let
   # use it with a particular device we need to add the particular dtb
   # to the kernel.
   kernelWithDTB = dtbName: pkgs.runCommand "kernel-with-dtb" {
-    passthru = kernel.passthru // { file = "zImage-dtb"; };
+    passthru = kernel.passthru // { file = "zImage-dtb"; unwrapped = kernel; };
   } ''
     mkdir $out
     ln -s --target-directory=$out ${kernel}/*
